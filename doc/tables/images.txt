@@ -1,0 +1,20 @@
+create table public.images (
+  id uuid not null default extensions.uuid_generate_v4 (),
+  request_id uuid null,
+  storage_url text not null, // 画像公開用URL
+  original_filename text null default 'NULL'::text,
+  created_at timestamp with time zone null default now(),
+  is_public boolean not null default false,
+  rating integer null,
+  views bigint null default 0,
+  constraint images_pkey primary key (id),
+  constraint images_request_id_key unique (request_id),
+  constraint images_request_id_storage_url_key unique (request_id, storage_url),
+  constraint images_request_id_fkey foreign KEY (request_id) references requests (id)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_images_request_id on public.images using btree (request_id) TABLESPACE pg_default;
+
+create index IF not exists idx_images_is_public on public.images using btree (is_public) TABLESPACE pg_default;
+
+create index IF not exists idx_images_generated_at on public.images using btree (created_at desc) TABLESPACE pg_default;
