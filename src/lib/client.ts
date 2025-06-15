@@ -4,7 +4,16 @@ import type { Image } from '@/types'
 // Supabaseクライアントを作成
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    global: {
+      // 常に最新データを取得する場合
+      fetch: (input, init) => fetch(input, { ...init, cache: 'no-store' }),
+
+      // 特定の時間間隔で再検証する場合 (例: 60秒ごと)
+      // fetch: (input, init) => fetch(input, { ...init, next: { revalidate: 60 } }),
+    }
+  }
 )
 
 // 有効な画像URLかどうかをチェックする関数
